@@ -1,0 +1,5 @@
+class MakeSessionOptionalInAnalyses < ActiveRecord::Migration[7.0]
+  def change
+    change_column_null :analyses, :session_id, true
+  end
+end

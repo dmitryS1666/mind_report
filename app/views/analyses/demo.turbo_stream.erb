@@ -4,4 +4,8 @@
 
 <%= turbo_stream.append "analysis_stream_target",
       partial: "analyses/stream_message",
-      locals: { analysis: @analysis, message: "Анализ поставлен в очередь…", kind: :info } %>
+      locals: { analysis: @analysis, message: "Готовлюсь к анализу…", kind: :info } %>
+
+<%= turbo_stream.update "history_list",
+      partial: "dashboard/history_list",
+      locals: { analyses: current_user.analyses.order(created_at: :desc).limit(50) } %>

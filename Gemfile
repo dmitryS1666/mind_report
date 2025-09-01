@@ -17,6 +17,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "tailwindcss-rails"
 gem "rails-i18n", "~> 7.0"
+gem "bcrypt", "~> 3.1"
 
 # Auth
 gem "devise"

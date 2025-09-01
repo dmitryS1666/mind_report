@@ -5,7 +5,7 @@ if ENV["OPENAI_API_KEY"].present?
   Rails.logger.info "[OpenAI] client initialized"
 elsif ENV["OPENAI_FAKE"] == "1"
   # Простейший фейк для локальной разработки
-  module OpenAIStub
+  module OpenAiStub
     class AudioAPI
       def transcriptions
         self
@@ -26,7 +26,7 @@ elsif ENV["OPENAI_FAKE"] == "1"
       def responses; @responses ||= ResponsesAPI.new; end
     end
   end
-  OpenAI_CLIENT = OpenAIStub::Client.new
+  OpenAI_CLIENT = OpenAiStub::Client.new
   Rails.logger.warn "[OpenAI] FAKE mode enabled (ENV OPENAI_FAKE=1)"
 else
   OpenAI_CLIENT = nil

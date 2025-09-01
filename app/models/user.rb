@@ -1,9 +1,8 @@
 class User < ApplicationRecord
   # Devise модули (минимальный набор)
   devise :database_authenticatable, :registerable,
-       :recoverable, :rememberable, :validatable,
-       :confirmable         
-
+         :recoverable, :rememberable, :validatable, :confirmable
+       
   # Нормализуем e-mail (и защитим уникальность кейс-инсенситив)
   before_validation :downcase_email
   validates :email, presence: true, uniqueness: { case_sensitive: false }
@@ -12,8 +11,8 @@ class User < ApplicationRecord
     self.email = email.to_s.strip.downcase
   end
 
-  enum role: { user: 0, admin: 1 }
-  enum plan: { free: 0, pro: 1 }
+  enum role: { user: 0, admin: 1 }, _prefix: true
+  enum plan: { free: 0, pro: 1 }, _prefix: true
 
   has_many :analyses, dependent: :destroy
   has_many :sessions, dependent: :destroy

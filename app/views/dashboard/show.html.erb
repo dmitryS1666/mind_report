@@ -1,45 +1,94 @@
-<div class="grid md:grid-cols-3 gap-6">
-  <!-- Левая колонка: форма -->
-  <div class="md:col-span-1">
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-      <h2 class="text-lg font-semibold mb-4">Новый анализ</h2>
-
-      <%= form_with url: demo_analyses_path, method: :post, data: { turbo_stream: true }, html: { class: "space-y-4", enctype: "multipart/form-data" } do |f| %>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Аудиофайл</label>
-          <input type="file" name="analysis[audio]"
-                 accept="audio/*"
-                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:ring-2 focus:ring-gray-200">
-          <p class="text-xs text-gray-500 mt-1">Поддерживаются форматы mp3, m4a, wav и др.</p>
-        </div>
-
-        <button class="w-full bg-gray-900 text-white rounded-lg px-4 py-2 font-medium hover:bg-gray-800 transition">
-          Запустить демо-анализ
-        </button>
-      <% end %>
+<div class="mx-auto max-w-6xl">
+  <!-- Заголовок + модалка живут в одном контроллере -->
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-900">Новый анализ</h1>
+      <p class="text-slate-600 text-sm">Загрузите аудио и запустите демо-анализ.</p>
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mt-6">
-      <h3 class="text-sm font-semibold text-gray-700 mb-2">Недавние</h3>
-      <ul class="space-y-2 text-sm">
-        <% @recent_analyses.each do |a| %>
-          <li>
-            <%= link_to "Анализ ##{a.id} — #{a.status}", analysis_path(a), class: "text-gray-900 hover:underline" %>
-            <div class="text-gray-500"><%= l(a.created_at, format: :short) %></div>
-          </li>
-        <% end %>
-      </ul>
-    </div>
+    <!-- справа -->
+    <button type="button"
+            class="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50"
+            onclick="window.dispatchEvent(new CustomEvent('open-history'))">
+      📜 История
+    </button>
   </div>
 
-  <!-- Правая колонка: «чат-панель» текущего анализа -->
-  <div class="md:col-span-2">
-    <div id="analysis_panels">
-      <%# Когда создаём новый анализ, сервер вернёт turbo_stream и вставит панель %}
-    </div>
+  <div class="grid grid-cols-12 gap-4">
+    <!-- ПРАВАЯ ПАНЕЛЬ: «Чат» -->
+    <section class="col-span-12">
+      <div id="chat"
+           class="bg-white border border-slate-200 rounded-xl p-4 space-y-4
+                  max-h-[calc(100vh-220px)] overflow-y-auto">
 
-    <%# Общий стрим контейнер для сообщений прогресса %>
-    <%= turbo_stream_from "analyses_stream_user_#{current_user.id}" %>
-    <div id="analysis_stream_target" class="mt-4 space-y-3"></div>
+        <!-- тулбар -->
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-slate-600">Лента событий</div>
+          <div class="flex items-center gap-2">
+            <!-- Очистить ленту (UI) -->
+            <button type="button"
+                    class="text-xs px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50"
+                    onclick="(function(){const a=document.getElementById('analysis_panels');const s=document.getElementById('analysis_stream_target');if(a)a.innerHTML='';if(s)s.innerHTML='';})()">
+              Очистить ленту
+            </button>
+
+            <!-- Очистить историю (БД) -->
+            <%= button_to "Очистить историю",
+                  clear_history_analyses_path,
+                  method: :delete,
+                  form: { data: { turbo_stream: true } },
+                  class: "text-xs px-2 py-1 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50" %>
+          </div>
+        </div>
+
+        <!-- панели текущего анализа -->
+        <div id="analysis_panels"></div>
+
+        <!-- общий стрим прогресса -->
+        <%= turbo_stream_from "analyses_stream_user_#{current_user.id}" %>
+        <div id="analysis_stream_target" class="space-y-3"></div>
+
+        <!-- Недавние (опционально) -->
+        <% if @recent_analyses.present? %>
+          <div class="pt-2 border-t border-slate-100">
+            <h3 class="text-sm font-semibold text-slate-700 mb-2">Недавние</h3>
+            <ul class="space-y-2 text-sm">
+              <% @recent_analyses.each do |a| %>
+                <li>
+                  <%= link_to "Анализ ##{a.id} — #{a.status}", analysis_path(a),
+                              class: "text-slate-900 hover:underline" %>
+                  <div class="text-slate-500"><%= l(a.created_at, format: :short) %></div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Липкая форма -->
+      <div class="sticky bottom-4 mt-4">
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+          <%= form_with url: demo_analyses_path,
+                        method: :post,
+                        data: { turbo_stream: true },
+                        html: { class: "flex items-center gap-3", enctype: "multipart/form-data" } do |f| %>
+
+            <%= f.file_field :audio, required: true, accept: "audio/*",
+                  class: "block w-full text-sm text-slate-600
+                          file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-slate-900 file:text-white
+                          hover:file:bg-slate-800" %>
+
+            <span class="hidden md:block text-xs text-slate-500 whitespace-nowrap">
+              Поддерживаются mp3, m4a, wav и др.
+            </span>
+
+            <%= f.submit "Запустить демо-анализ",
+                  class: "px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700" %>
+          <% end %>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

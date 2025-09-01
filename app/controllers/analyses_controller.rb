@@ -23,20 +23,39 @@ class AnalysesController < ApplicationController
   # POST /analyses/demo
   # Принимает аудиофайл, создаёт Analysis и запускает демо-обработку (без OpenAI).
   def demo
-    @analysis = current_user.analyses.create!(
+    @analysis = current_user.analyses.new(
       status: :queued,
-      report_kind: :short,    # укороченная версия для демо
-      openai_model: "stub:v1" # помечаем, что это заглушка
+      report_kind: :short,
+      openai_model: "stub:v1"
     )
 
-    # сохраняем прикреплённый файл (если используешь ActiveStorage — раскомментируй)
-    # @analysis.audio.attach(params[:analysis][:audio]) if params.dig(:analysis, :audio).present?
+    # поддержим оба варианта формы: analysis[audio] и просто audio
+    uploaded = params.dig(:analysis, :audio) || params[:audio]
+    @analysis.audio.attach(uploaded) if uploaded.present?
+
+    @analysis.save! # валидируем уже с прикреплённым файлом
 
     DemoAnalysisJob.perform_later(@analysis.id)
 
     respond_to do |format|
-      format.turbo_stream # рендерим turbo_stream ответ (см. views/analyses/demo.turbo_stream.erb)
+      format.turbo_stream
       format.html { redirect_to authenticated_root_path, notice: "Анализ запущен" }
+    end
+  end
+
+  def clear_history
+    current_user.analyses.delete_all
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = "История очищена"
+        render turbo_stream: [
+          # перерисовать список в панели истории
+          turbo_stream.update("history_list", partial: "dashboard/history_list", locals: { analyses: [] }),
+          # и показать тост
+          turbo_stream.append("toasts", partial: "shared/toast", locals: { kind: :success, message: "История очищена" })
+        ]
+      end
+      format.html { redirect_to dashboard_path, notice: "История очищена" }
     end
   end
 

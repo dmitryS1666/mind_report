@@ -1,15 +1,7 @@
 <div id="<%= dom_id(analysis, :panel) %>" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
   <div class="flex items-center justify-between">
     <h2 class="text-lg font-semibold">Анализ #<%= analysis.id %></h2>
-    <span class="text-xs px-2 py-1 rounded
-      <%= case analysis.status
-          when "queued" then "bg-slate-100 text-slate-700"
-          when "processing" then "bg-amber-100 text-amber-800"
-          when "ready" then "bg-emerald-100 text-emerald-800"
-          when "failed" then "bg-rose-100 text-rose-800"
-          end %>">
-      <%= analysis.status %>
-    </span>
+    <%= render "analyses/status", analysis: analysis %>
   </div>
 
   <% if analysis.ready? %>

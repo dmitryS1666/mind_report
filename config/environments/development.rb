@@ -33,6 +33,13 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+  # Выполнять задачи сразу, без Redis/Sidekiq
+  config.active_job.queue_adapter = :inline
+
+  # Пусть ActiveStorage тоже идёт через inline (это просто имена очередей)
+  config.active_storage.queues.analysis = :default
+  config.active_storage.queues.purge    = :default
+
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true  

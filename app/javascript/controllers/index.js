@@ -11,3 +11,9 @@ application.register("password-visibility", PasswordVisibilityController)
 
 import ToastController from "./toast_controller"
 application.register("toast", ToastController)
+
+import DrawerController from "./drawer_controller"
+application.register("drawer", DrawerController)
+
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)

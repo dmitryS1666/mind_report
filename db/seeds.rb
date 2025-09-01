@@ -1,36 +1,47 @@
-# Промпты
-PromptTemplate.find_or_create_by!(key: 'short_report') do |p|
-  p.version = 1
-  p.system_prompt = "Ты — аналитик. Кратко выделяй ключевые тезисы и выводы."
-  p.user_prompt = <<~PROMPT
-    Транскрипт:
-    {{TRANSCRIPT}}
-
-    Сформируй краткий отчёт:
-    - Основные темы (3–5 маркеров)
-    - Ключевые цитаты (до 3)
-    - Два практических совета
-  PROMPT
+PromptTemplate.find_or_create_by!(
+  key: "sales_session",
+  version: 1,
+  plan: :free,
+  report_kind: :short,
+  locale: "ru"
+) do |p|
+  p.system_prompt = <<~SYS
+    Ты — ассистент-аналитик продаж. Делаешь краткий, понятный отчёт без глубокой психологии.
+  SYS
+  p.user_prompt = <<~USR
+    Дано: транскрипт разговора менеджера с клиентом.
+    Задача: коротко ответить по 4 пунктам:
+    1) Клиент: цель, основная боль, общий тип (эмоциональный/рациональный/сомневающийся).
+    2) Менеджер: как вёл диалог (уверенность, контакт, аргументы, упоминание цены/предоплаты).
+    3) Итог: была ли продажа/прогресс?
+    4) Рекомендация: 1–2 совета для улучшения.
+    Формат: маркированные пункты, до 120–160 слов, без лишних разделов.
+  USR
+  p.notes = "Демо/урезанный отчёт"
+  p.metadata = { origin: "seed", kind: "demo_short" }
 end
 
-PromptTemplate.find_or_create_by!(key: 'full_report') do |p|
-  p.version = 1
-  p.system_prompt = "Ты — старший аналитик. Дай структурный глубинный анализ."
-  p.user_prompt = <<~PROMPT
-    Транскрипт:
-    {{TRANSCRIPT}}
-
-    Сформируй подробный отчёт:
-    1) Резюме (5–7 предложений)
-    2) Темы/подтемы (иерархия)
-    3) Цитаты с тайм-кодами (если есть)
-    4) Риски/возможности
-    5) План действий на 7 дней
-  PROMPT
+PromptTemplate.find_or_create_by!(
+  key: "sales_session",
+  version: 1,
+  plan: :pro,
+  report_kind: :full,
+  locale: "ru"
+) do |p|
+  p.system_prompt = <<~SYS
+    Ты — эксперт по анализу продаж и психологии (Олпорт, Бек и пр.). Делаешь глубокий многошаговый анализ.
+  SYS
+  p.user_prompt = File.read(Rails.root.join("config", "prompts", "sales_session_full_ru_v1.txt")) rescue <<~USR
+    <!-- сюда можно положить полный промт из документа -->
+    [ПОЛНЫЙ ПРОМТ...]
+  USR
+  p.notes = "Полный отчёт для платного плана"
+  p.metadata = { origin: "seed", kind: "full_v1" }
 end
 
-# Тарифы/квоты (можно править в админке)
-PlanSetting.find_or_create_by!(plan: :free) { |ps| ps.limit = 3;  ps.price_cents = 0 }
-PlanSetting.find_or_create_by!(plan: :pro)  { |ps| ps.limit = 10; ps.price_cents = 990_00 }
-
-puts "Seeds ok: prompts=#{PromptTemplate.count}, plans=#{PlanSetting.count}"
+User.find_or_create_by!(email: "admin@example.com") do |u|
+  u.password = "password"
+  u.password_confirmation = "password"
+  u.role = :admin
+  u.plan = :pro
+end

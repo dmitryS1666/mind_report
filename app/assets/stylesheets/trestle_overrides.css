@@ -1,0 +1,27 @@
+/* Общий текст формы логина */
+.trestle .login .card,
+.trestle .login .card * {
+  color: #111 !important;
+}
+
+/* Поля ввода */
+.trestle .login .card .form-control {
+  background: #fff !important;
+  color: #111 !important;
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+/* Плейсхолдер */
+.trestle .login .card .form-control::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+/* Кнопка */
+.trestle .login .card .btn-primary {
+  background: #111 !important;
+  border-color: #111 !important;
+}
+.trestle .login .card .btn-primary:hover {
+  background: #222 !important;
+  border-color: #222 !important;
+}
