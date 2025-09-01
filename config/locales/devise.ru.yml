@@ -1,0 +1,44 @@
+ru:
+  devise:
+    failure:
+      unauthenticated: "Сначала войдите в систему."
+      invalid: "Неверный email или пароль."
+      not_found_in_database: "Неверный email или пароль."
+      already_authenticated: "Вы уже вошли в систему."
+      locked: "Ваш аккаунт заблокирован."
+      last_attempt: "Осталась последняя попытка перед блокировкой."
+      timeout: "Ваша сессия истекла. Пожалуйста, войдите снова."
+      inactive: "Ваш аккаунт не активирован."
+
+      # Для скоупа user — Devise иногда ищет ru.devise.failure.user.unauthenticated
+      user:
+        unauthenticated: "Сначала войдите в систему."
+
+    sessions:
+      signed_in: "Вы вошли в систему."
+      signed_out: "Вы вышли из системы."
+      already_signed_out: "Вы уже вышли из системы."
+
+    registrations:
+      signed_up: "Аккаунт успешно создан."
+      updated: "Профиль обновлён."
+      destroyed: "Аккаунт удалён. Ждём вас снова!"
+      signed_up_but_unconfirmed: "Письмо с подтверждением отправлено на ваш email."
+
+    passwords:
+      send_instructions: "В течение нескольких минут вы получите письмо с инструкциями по смене пароля."
+      updated: "Пароль успешно изменён."
+      no_token: "Ссылка для смены пароля недействительна или устарела."
+
+    confirmations:
+      confirmed: "Ваш email успешно подтвержден. Добро пожаловать!"
+      send_instructions: "Мы отправили письмо с инструкциями по подтверждению на ваш email."
+      send_paranoid_instructions: "Если ваш email существует в нашей системе, вы получите письмо с инструкциями."
+
+    mailer:
+      confirmation_instructions:
+        subject: "Подтверждение аккаунта"
+      reset_password_instructions:
+        subject: "Сброс пароля"
+      unlock_instructions:
+        subject: "Разблокировка аккаунта"

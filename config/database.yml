@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  host: localhost
+  username: mind_report
+  password: Strong_Pass_123
+
+development:
+  <<: *default
+  database: mind_report_development
+
+test:
+  <<: *default
+  database: mind_report_test
+
+production:
+  <<: *default
+  database: mind_report_production
+  variables:
+    statement_timeout: 15000

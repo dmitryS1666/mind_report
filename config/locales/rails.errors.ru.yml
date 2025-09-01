@@ -1,0 +1,13 @@
+ru:
+  errors:
+    messages:
+      # используется devise/shared/error_messages
+      not_saved:
+        one:   "%{resource} не сохранён: %{count} ошибка."
+        few:   "%{resource} не сохранён: %{count} ошибки."
+        many:  "%{resource} не сохранён: %{count} ошибок."
+        other: "%{resource} не сохранён: %{count} ошибок."
+      # на всякий случай — базовые
+      taken: "уже существует"
+      blank: "не может быть пустым"
+      invalid: "имеет неверное значение"

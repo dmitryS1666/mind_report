@@ -1,0 +1,7 @@
+<%= turbo_stream.prepend "analysis_panels",
+      partial: "analyses/panel",
+      locals: { analysis: @analysis } %>
+
+<%= turbo_stream.append "analysis_stream_target",
+      partial: "analyses/stream_message",
+      locals: { analysis: @analysis, message: "Анализ поставлен в очередь…", kind: :info } %>

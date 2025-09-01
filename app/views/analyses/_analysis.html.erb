@@ -1,0 +1,35 @@
+<%# "сообщение ассистента" %>
+<div id="analysis-<%= analysis.id %>" class="flex gap-3">
+  <div class="shrink-0 mt-1 h-8 w-8 rounded-full bg-slate-200"></div>
+  <div class="grow">
+    <div class="text-xs text-slate-500 mb-1">
+      <%= analysis.created_at.strftime("%d.%m.%Y %H:%M") %> • <%= analysis.report_kind.capitalize %>
+    </div>
+
+    <% if analysis.done? %>
+      <div class="prose prose-slate max-w-none">
+        <pre class="whitespace-pre-wrap text-sm"><%= analysis.report_text %></pre>
+      </div>
+      <details class="mt-2">
+        <summary class="text-xs text-slate-500 cursor-pointer">Показать транскрипт</summary>
+        <pre class="whitespace-pre-wrap text-xs mt-1"><%= analysis.transcript %></pre>
+      </details>
+    <% elsif analysis.failed? %>
+      <div class="rounded-md bg-rose-50 text-rose-900 px-3 py-2 text-sm">
+        Ошибка: <%= analysis.error_message.presence || "что-то пошло не так" %>
+      </div>
+    <% else %>
+      <div
+        data-controller="analysis-status"
+        data-analysis-status-url-value="<%= analysis_path(analysis, format: :json) %>"
+        class="flex items-center gap-2 text-slate-700"
+      >
+        <div class="animate-pulse h-2 w-2 rounded-full bg-emerald-600"></div>
+        <span data-analysis-status-target="line" class="text-sm">
+          <%# первая фраза при рендере %>
+          анализирую аудио файл…
+        </span>
+      </div>
+    <% end %>
+  </div>
+</div>

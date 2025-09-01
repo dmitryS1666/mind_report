@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-fade-in  { @apply transition-opacity duration-200 opacity-0; }
+  .animate-fade-in.show { @apply opacity-100; }
+  .animate-fade-out { @apply transition-opacity duration-200; }
+
+  /* более мягкий «breathing» эффект */
+  .animate-breathe {
+    animation: breathe 1.8s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: .35; }
+    50%      { opacity: 1; }
+  }
+}
+
+@layer base {
+  html { @apply antialiased; }
+  body { @apply bg-slate-50 text-slate-800; }
+}
+
+/* ===== Компоненты для форм ===== */
+@layer components {
+  .auth-wrapper { @apply min-h-[calc(100vh-56px)] flex items-center justify-center px-4; } /* центрируем */
+  .auth-card    { @apply w-full max-w-md bg-white/90 backdrop-blur border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8; } /* фон + бордер + скругления */
+
+  .title-xl     { @apply text-2xl font-semibold; }
+  .hint         { @apply text-xs text-slate-500; }
+
+  .label        { @apply block text-sm font-medium text-slate-700 mb-1; } /* лейбл СВЕРХУ поля */
+  .input        { @apply block w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 shadow-sm focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-900/10; } /* тонкий серый бордер */
+  .input-error  { @apply border-rose-300 focus:border-rose-400 focus:ring-rose-100; }
+  .error-text   { @apply mt-1 text-xs text-rose-600; }
+
+  .btn          { @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition; }
+  .btn-primary  { @apply bg-slate-900 text-white hover:bg-slate-800; }
+  .btn-ghost    { @apply text-slate-600 hover:text-slate-900; }
+  .btn-block    { @apply w-full; }
+}
+
+/* (опционально) убираем жёлтый autofill у Chrome */
+@layer base {
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    box-shadow: 0 0 0px 1000px white inset;
+    -webkit-text-fill-color: #0f172a; /* slate-900 */
+  }
+}

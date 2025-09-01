@@ -1,0 +1,28 @@
+<% if resource && resource.errors.any? %>
+  <div data-controller="toast"
+       data-toast-type-value="error"
+       data-toast-timeout-value="8000"
+       class="pointer-events-auto rounded-lg border border-rose-200 shadow-sm px-4 py-3 text-sm bg-rose-50/70
+              fixed top-4 right-4 z-50 w-[92vw] max-w-md">
+    <div class="flex items-start gap-3">
+      <div class="mt-0.5">
+        <span class="inline-block h-2.5 w-2.5 rounded-full bg-rose-600"></span>
+      </div>
+      <div class="grow">
+        <div class="font-medium text-rose-900 mb-1">
+          <%= I18n.t("errors.messages.not_saved",
+                     count: resource.errors.count,
+                     resource: resource.class.model_name.human) %>
+        </div>
+        <ul class="list-disc pl-5 space-y-1 text-rose-900/90">
+          <% resource.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+      <button type="button"
+              class="ml-2 -mr-1 rounded p-1 text-rose-700 hover:bg-rose-100"
+              data-action="toast#dismiss" aria-label="Закрыть">✕</button>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,36 @@
+<div id="<%= dom_id(analysis, :panel) %>" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold">Анализ #<%= analysis.id %></h2>
+    <span class="text-xs px-2 py-1 rounded
+      <%= case analysis.status
+          when "queued" then "bg-slate-100 text-slate-700"
+          when "processing" then "bg-amber-100 text-amber-800"
+          when "ready" then "bg-emerald-100 text-emerald-800"
+          when "failed" then "bg-rose-100 text-rose-800"
+          end %>">
+      <%= analysis.status %>
+    </span>
+  </div>
+
+  <% if analysis.ready? %>
+    <div class="mt-4 space-y-4">
+      <div class="text-sm text-gray-500">Транскрипция (демо):</div>
+      <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap"><%= analysis.transcript %></pre>
+
+      <div class="text-sm text-gray-500">Краткий отчёт:</div>
+      <div class="prose prose-sm max-w-none">
+        <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap"><%= analysis.report_text %></pre>
+      </div>
+    </div>
+  <% elsif analysis.failed? %>
+    <div class="mt-4 text-rose-700">
+      Произошла ошибка: <%= analysis.error_message %>
+    </div>
+  <% else %>
+    <%# Пока не готово — показываем «мигающий» прелоадер сообщений %>
+    <div class="mt-4 text-sm text-gray-700 flex items-center gap-2">
+      <span class="inline-flex h-2 w-2 rounded-full bg-gray-400 animate-pulse"></span>
+      <span class="animate-pulse">Готовлюсь к анализу…</span>
+    </div>
+  <% end %>
+</div>

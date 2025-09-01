@@ -1,0 +1,10 @@
+<% if resource && resource.errors.any? %>
+  <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+    <div class="font-medium mb-1">Пожалуйста, исправьте ошибки:</div>
+    <ul class="list-disc pl-5">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

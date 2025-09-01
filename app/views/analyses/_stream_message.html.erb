@@ -1,0 +1,14 @@
+<% color = case kind.to_s
+           when "error" then "border-rose-200 bg-rose-50 text-rose-900"
+           when "progress" then "border-amber-200 bg-amber-50 text-amber-900"
+           else "border-slate-200 bg-white text-slate-900"
+           end %>
+
+<div class="rounded-lg border <%= color %> shadow-sm px-4 py-3 text-sm">
+  <div class="flex items-start gap-3">
+    <span class="mt-1 inline-block h-2.5 w-2.5 rounded-full
+      <%= kind.to_s == "error" ? "bg-rose-600" : (kind.to_s == "progress" ? "bg-amber-600" : "bg-slate-600") %>">
+    </span>
+    <div class="grow"><%= message %></div>
+  </div>
+</div>

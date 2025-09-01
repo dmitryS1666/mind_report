@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  key: MyString
+  system_prompt: MyText
+  user_prompt: MyText
+  version: 1
+
+two:
+  key: MyString
+  system_prompt: MyText
+  user_prompt: MyText
+  version: 1

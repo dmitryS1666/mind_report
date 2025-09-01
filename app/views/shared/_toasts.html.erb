@@ -1,0 +1,62 @@
+<%# Единый фиксированный контейнер справа-сверху %>
+<% if flash.present? %>
+  <div class="fixed top-4 right-4 z-50 w-96 max-w-[90vw] space-y-3">
+
+    <% flash.each do |key, value| %>
+      <% next if value.blank? %>
+
+      <% type = case key.to_s
+                when "notice", "success" then "success"
+                when "alert",  "error"   then "error"
+                when "warning"           then "warning"
+                else                          "info"
+                end %>
+
+      <% border = { "success"=>"border-emerald-200",
+                    "error"=>"border-rose-200",
+                    "warning"=>"border-amber-200",
+                    "info"=>"border-slate-200" }[type] %>
+
+      <% dot = { "success"=>"bg-emerald-600",
+                 "error"=>"bg-rose-600",
+                 "warning"=>"bg-amber-600",
+                 "info"=>"bg-slate-600" }[type] %>
+
+      <% title = { "success"=>"Готово",
+                   "error"=>"Ошибка",
+                   "warning"=>"Внимание",
+                   "info"=>"Информация" }[type] %>
+
+      <div
+        data-controller="toast"
+        data-toast-type-value="<%= type %>"
+        data-toast-timeout-value="7000"
+        role="alert"
+        class="pointer-events-auto rounded-xl <%= border %> bg-white shadow-lg border
+               px-4 py-3 text-sm"
+      >
+        <div class="flex items-start gap-3">
+          <span class="mt-2 inline-block h-2.5 w-2.5 rounded-full <%= dot %>"></span>
+
+          <div class="grow">
+            <div class="font-medium text-slate-900"><%= title %></div>
+
+            <%# Контейнер с авто-высотой: растёт по содержимому, но при очень длинных сообщениях прокручивается %>
+            <div class="mt-1 text-slate-800 max-h-[70vh] overflow-auto">
+              <%= value %>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            aria-label="Закрыть"
+            data-action="toast#dismiss"
+            class="ml-2 -mr-1 rounded p-1 text-slate-500 hover:bg-slate-100"
+          >✕</button>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+  <% flash.clear %>
+<% end %>
