@@ -1,0 +1,9 @@
+<%# app/views/analyses/show.turbo_stream.erb %>
+<%= turbo_stream.prepend "analysis_panels",
+      partial: "analyses/panel",
+      locals: { analysis: @analysis } %>
+
+<%# опционально: прокрутить «чат» вниз (через небольшой inline-скрипт) %>
+<%= turbo_stream.append "analysis_stream_target", partial: "shared/inline_script", locals: {
+  js: "try{const c=document.getElementById('chat'); if(c) c.scrollTop=c.scrollHeight;}catch(e){}"
+} %>

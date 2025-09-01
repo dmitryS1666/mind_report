@@ -52,7 +52,7 @@ class AnalysesController < ApplicationController
           # перерисовать список в панели истории
           turbo_stream.update("history_list", partial: "dashboard/history_list", locals: { analyses: [] }),
           # и показать тост
-          turbo_stream.append("toasts", partial: "shared/toast", locals: { kind: :success, message: "История очищена" })
+          turbo_stream.append("toast-root", partial: "shared/toasts", locals: { kind: :success, message: "История очищена" })
         ]
       end
       format.html { redirect_to dashboard_path, notice: "История очищена" }
@@ -61,6 +61,11 @@ class AnalysesController < ApplicationController
 
   def show
     @analysis = current_user.analyses.find(params[:id])
+
+    respond_to do |format|
+      format.turbo_stream # -> views/analyses/show.turbo_stream.erb
+      format.html { redirect_to authenticated_root_path(anchor: "analysis-#{@analysis.id}") }
+    end
   end
 
   private
