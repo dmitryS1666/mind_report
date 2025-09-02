@@ -1,0 +1,99 @@
+<%# Скрываем баннер, если cookie уже есть %>
+<div id="cookie-consent"
+     class="cookie-consent <%= 'is-hidden' if cookies[:cookie_consent].present? %>"
+     role="dialog"
+     aria-live="polite"
+     aria-label="Согласие на использование файлов cookie и обработку данных">
+
+  <div class="cookie-consent__body">
+    <div class="cookie-consent__text">
+      <strong>ReportMind</strong>: Продолжая использовать сайт, вы даёте согласие «ReportMind» на обработку cookies и пользовательских данных, в том числе с помощью аналитического сервиса Яндекс.Метрика.
+      <a class="cookie-consent__link"
+         href="/docs/reportmind-data-processing.pdf"
+         target="_blank" rel="noopener">
+        Подробнее (PDF)
+      </a>
+    </div>
+
+    <div class="cookie-consent__actions">
+      <button id="cookie-accept" class="btn btn--primary" type="button" aria-label="Принять">Принять</button>
+      <button id="cookie-decline" class="btn btn--ghost" type="button" aria-label="Отклонить">Отклонить</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-consent {
+    position: fixed; inset: auto 16px 16px 16px; z-index: 2147483000;
+    max-width: 720px; margin: 0 auto;
+    background: #111827; color: #F9FAFB; border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  .cookie-consent.is-hidden { display: none; }
+  .cookie-consent__body { display: grid; gap: 12px; grid-template-columns: 1fr auto; padding: 16px; align-items: center; }
+  @media (max-width: 680px) { .cookie-consent__body { grid-template-columns: 1fr; } }
+  .cookie-consent__text { font-size: 14px; line-height: 1.45; }
+  .cookie-consent__link { color: #93C5FD; text-decoration: underline; }
+  .cookie-consent__actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn { cursor: pointer; border: 1px solid transparent; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
+  .btn--primary { background: #2563EB; color: #fff; }
+  .btn--primary:hover { filter: brightness(1.05); }
+  .btn--ghost { background: transparent; color: #E5E7EB; border-color: #374151; }
+  .btn--ghost:hover { background: rgba(255,255,255,.06); }
+</style>
+
+<script>
+(function(){
+  var bar = document.getElementById('cookie-consent');
+  if(!bar) return;
+
+  function setCookie(name, value, days) {
+    var d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Lax";
+  }
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  // Если уже согласился ранее — сразу подключаем Метрику
+  var existing = getCookie('cookie_consent');
+  if (existing) {
+    if (existing === 'true') { window.__cookieConsent = true; loadMetrika(); }
+    bar.classList.add('is-hidden');
+    return;
+  }
+
+  document.getElementById('cookie-accept').addEventListener('click', function(){
+    setCookie('cookie_consent','true',180);
+    window.__cookieConsent = true;
+    loadMetrika();
+    bar.classList.add('is-hidden');
+  });
+
+  document.getElementById('cookie-decline').addEventListener('click', function(){
+    setCookie('cookie_consent','false',180);
+    window.__cookieConsent = false;
+    bar.classList.add('is-hidden');
+  });
+
+  function loadMetrika(){
+    if (window.__metrikaLoaded) return;
+    window.__metrikaLoaded = true;
+
+    // Вставляем официальный тег Метрики только при согласии
+    (function(m,e,t,r,i,k,a){ m[i]=m[i]||function(){ (m[i].a=m[i].a||[]).push(arguments) };
+      m[i].l=1*new Date(); k=e.createElement(t), a=e.getElementsByTagName(t)[0];
+      k.async=1; k.src=r; a.parentNode.insertBefore(k,a);
+    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    // ВАЖНО: замените ENV или число ниже на ваш реальный ID счётчика
+    ym(<%= ENV.fetch('YANDEX_METRIKA_ID', '12345678') %>, "init", {
+      clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, defer:true
+    });
+  }
+})();
+</script>
