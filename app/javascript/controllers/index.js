@@ -17,3 +17,6 @@ application.register("toast", ToastController)
 
 import ModalController from "./modal_controller"
 application.register("modal", ModalController)
+
+import FadeController from "./fade_controller"
+application.register("fade", FadeController)

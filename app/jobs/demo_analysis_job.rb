@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class DemoAnalysisJob < ApplicationJob
   queue_as :default
 
@@ -22,16 +20,17 @@ class DemoAnalysisJob < ApplicationJob
       break if analysis.failed?
     end
 
-    # 1) транскрипт — заглушка
-    transcript = "Тестовая транскрипция (демо)."
+    # 1) транскрипт: если уже есть (из текстового файла) — используем,
+    # иначе подставляем демо-строку
+    transcript = analysis.transcript.presence || "Тестовая транскрипция (демо)."
 
-    # 2) берём короткий промт (free/short/ru), если нет — дефолты
-    prompt = PromptTemplate
-               .where(key: "sales_session",
-                      plan: PromptTemplate.plans[:free],
-                      report_kind: PromptTemplate.report_kinds[:short],
-                      locale: I18n.locale)
-               .order(version: :desc).first
+    # 2) берём промпт (как было) ...
+    prompt = PromptTemplate.where(
+      key: "sales_session",
+      plan: PromptTemplate.plans[:free],
+      report_kind: PromptTemplate.report_kinds[:short],
+      locale: I18n.locale
+    ).order(version: :desc).first
 
     system_prompt = prompt&.system_prompt || "Ты — ассистент-аналитик продаж. Сделай краткий отчёт."
     user_prompt   = prompt&.user_prompt   || <<~TXT
@@ -39,7 +38,6 @@ class DemoAnalysisJob < ApplicationJob
       Задача: кратко ответить по 4 пунктам: Клиент, Менеджер, Итог, Рекомендации.
     TXT
 
-    # 3) ответ «модели» через заглушку (принимает любые лишние kwargs)
     report_text = OpenAiStub.summarize(
       transcript: transcript,
       prompt_key: "demo_short_v1",
@@ -50,7 +48,6 @@ class DemoAnalysisJob < ApplicationJob
       user_prompt: user_prompt
     )
 
-    # 4) сохранили результат и обновили карточку
     analysis.update!(
       status: :ready,
       transcript: transcript.truncate(10_000),
@@ -59,6 +56,7 @@ class DemoAnalysisJob < ApplicationJob
     )
     broadcast_status(analysis)
     broadcast_done(analysis)
+    broadcast_fade_stream(analysis)
 
   rescue => e
     if analysis&.persisted?
@@ -81,8 +79,9 @@ class DemoAnalysisJob < ApplicationJob
     "analyses_stream_user_#{user_id}"
   end
 
+  # ТЕПЕРЬ — ПРЕПЕНД, чтобы новые строки были сверху
   def broadcast_step(analysis, message, kind: :info)
-    Turbo::StreamsChannel.broadcast_append_to(
+    Turbo::StreamsChannel.broadcast_prepend_to(
       stream_name(analysis.user_id),
       target: "analysis_stream_target",
       partial: "analyses/stream_message",
@@ -99,6 +98,15 @@ class DemoAnalysisJob < ApplicationJob
     )
   end
 
+  # Маркер, который подключит Stimulus-контроллер "fade" и плавно очистит ленту
+  def broadcast_fade_stream(analysis)
+    Turbo::StreamsChannel.broadcast_append_to(
+      stream_name(analysis.user_id),
+      target: "analysis_stream_target",
+      partial: "analyses/stream_fade"
+    )
+  end
+
   def broadcast_done(analysis)
     Turbo::StreamsChannel.broadcast_replace_to(
       stream_name(analysis.user_id),
@@ -109,7 +117,7 @@ class DemoAnalysisJob < ApplicationJob
   end
 
   def broadcast_error(analysis, message)
-    Turbo::StreamsChannel.broadcast_append_to(
+    Turbo::StreamsChannel.broadcast_prepend_to(
       stream_name(analysis.user_id),
       target: "analysis_stream_target",
       partial: "analyses/stream_message",

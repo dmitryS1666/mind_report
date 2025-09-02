@@ -3,12 +3,17 @@ Rails.application.routes.draw do
 
   root "dashboard#show"
   resource :dashboard, only: :show
+
   resources :analyses, only: [:create, :show] do
+    member do
+      get :download   # <— добавить
+    end
     collection do
       post :demo
       delete :clear_history
     end
   end
+
   resources :sessions, only: :create
 
   if Rails.env.development?

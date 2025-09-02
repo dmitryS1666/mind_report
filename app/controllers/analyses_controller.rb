@@ -1,3 +1,4 @@
+# app/controllers/analyses_controller.rb
 class AnalysesController < ApplicationController
   before_action :authenticate_user!
 
@@ -20,8 +21,6 @@ class AnalysesController < ApplicationController
     end
   end
 
-  # POST /analyses/demo
-  # Принимает аудиофайл, создаёт Analysis и запускает демо-обработку (без OpenAI).
   def demo
     @analysis = current_user.analyses.new(
       status: :queued,
@@ -29,17 +28,32 @@ class AnalysesController < ApplicationController
       openai_model: "stub:v1"
     )
 
-    # поддержим оба варианта формы: analysis[audio] и просто audio
-    uploaded = params.dig(:analysis, :audio) || params[:audio]
-    @analysis.audio.attach(uploaded) if uploaded.present?
+    # принимаем либо analysis[file], либо file
+    uploaded = params.dig(:analysis, :file) || params[:file]
 
-    @analysis.save! # валидируем уже с прикреплённым файлом
+    if uploaded.present?
+      ct = uploaded.content_type.to_s
+
+      if ct.start_with?("audio/")
+        # оставляем как было — прикрепляем к audio
+        @analysis.audio.attach(uploaded)
+      else
+        # считаем как текст (txt/md) — читаем содержимое и кладём сразу в transcript
+        # (при желании можно также хранить файл во вложении)
+        raw = uploaded.read.to_s.force_encoding("UTF-8")
+        @analysis.transcript = raw.truncate(10_000)
+        # опционально: если хотите хранить исходник:
+        # @analysis.text_file.attach(uploaded)
+      end
+    end
+
+    @analysis.save!
 
     DemoAnalysisJob.perform_later(@analysis.id)
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to authenticated_root_path, notice: "Анализ запущен" }
+      format.html { redirect_to root_path, notice: "Анализ запущен" }
     end
   end
 
@@ -47,25 +61,29 @@ class AnalysesController < ApplicationController
     current_user.analyses.delete_all
     respond_to do |format|
       format.turbo_stream do
-        flash.now[:notice] = "История очищена"
         render turbo_stream: [
-          # перерисовать список в панели истории
           turbo_stream.update("history_list", partial: "dashboard/history_list", locals: { analyses: [] }),
-          # и показать тост
-          turbo_stream.append("toast-root", partial: "shared/toasts", locals: { kind: :success, message: "История очищена" })
+          turbo_stream.append("toast-root", partial: "shared/toast_item",
+                            locals: { kind: "success", message: "История очищена" })
         ]
       end
       format.html { redirect_to dashboard_path, notice: "История очищена" }
     end
   end
 
+  # Только HTML, без respond_to — никаких turbo-stream тут.
   def show
     @analysis = current_user.analyses.find(params[:id])
+    # рендерит app/views/analyses/show.html.erb
+  end
 
-    respond_to do |format|
-      format.turbo_stream # -> views/analyses/show.turbo_stream.erb
-      format.html { redirect_to authenticated_root_path(anchor: "analysis-#{@analysis.id}") }
-    end
+  # Отдельный экшен на скачивание
+  def download
+    analysis = current_user.analyses.find(params[:id])
+    send_data analysis.report_text.to_s,
+              filename: "analysis-#{analysis.id}.txt",
+              type: "text/plain",
+              disposition: "attachment"
   end
 
   private

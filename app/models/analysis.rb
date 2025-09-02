@@ -6,6 +6,7 @@ class Analysis < ApplicationRecord
   enum report_kind: { short: 0, full: 1 }
 
   has_one_attached :audio
+  has_one_attached :text_file
 
   validate :audio_presence_type_size, if: :require_audio_validation?
 

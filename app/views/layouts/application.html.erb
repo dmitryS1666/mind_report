@@ -49,34 +49,34 @@
                   opacity-0 scale-95"></div>
 
       <!-- Панель -->
-      <div id="history-panel"
-          data-modal-target="panel"
-          class="hidden fixed inset-0 z-[9999] p-4 flex items-center justify-center
+      <div id="history-panel" data-modal-target="panel"
+          class="hidden fixed inset-0 z-[9999] p-4 items-center justify-center
                   opacity-0 scale-95 transition duration-150 ease-out">
-        <div class="pointer-events-auto bg-white rounded-xl shadow-2xl w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden">
-          
+
+        <div class="pointer-events-auto bg-white rounded-xl shadow-2xl w-full max-w-2xl h-[90vh]">
+
           <!-- Шапка -->
-          <div class="p-4 border-b border-slate-200 flex justify-between items-center w-full" style="width: 95%; position: absolute;">
-            <h3 class="text-sm font-semibold text-slate-800">История запросов</h3>
-            <button class="p-2 rounded-md hover:bg-slate-100"
+          <div class="p-4 border-b border-slate-200 justify-between items-center w-full" style="height: 50px;">
+            <h3 class="text-sm font-semibold text-slate-800" style="width: 95%;float: left;">История запросов</h3>
+            <button class="p-2 rounded-md hover:bg-slate-100" style="float: right;"
                     data-action="click->modal#close"
                     aria-label="Закрыть">✕</button>
           </div>
 
-          <!-- Кнопка очистки -->
-          <div class="p-3" style="position: absolute; right: 20px; margin-top: 55px;">
+          <!-- Список со скроллом -->
+          <div class="overflow-y-auto p-4 w-full border-b border-slate-200" style="max-height: 350px;overflow: auto;">
+            <div id="history_list">
+              <%= render "dashboard/history_list", analyses: @history_analyses %>
+            </div> 
+          </div>
+
+          <!-- Подвал -->
+          <div class="p-4">
             <%= button_to "Очистить историю",
                   clear_history_analyses_path,
                   method: :delete,
                   form: { data: { turbo_stream: true } },
-                  class: "text-sm px-3 py-2 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50" %>
-          </div>
-
-          <!-- Список истории -->
-          <div class="p-4 overflow-y-auto grow" style="position: relative; margin-top: 120px;">
-            <div id="history_list">
-              <%= render "dashboard/history_list", analyses: @history_analyses %>
-            </div>
+                  class: "text-sm px-3 py-2 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50" %> 
           </div>
         </div>
       </div>

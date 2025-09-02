@@ -1,0 +1,44 @@
+<!-- app/views/analyses/show.html.erb -->
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-slate-900">Анализ #<%= @analysis.id %></h1>
+    <div class="flex items-center gap-2">
+      <%= link_to "← Назад", root_path,
+            class: "inline-flex items-center px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50" %>
+      <%= link_to "Скачать .txt", download_analysis_path(@analysis, format: :txt),
+            class: "inline-flex items-center px-3 py-2 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700" %>
+    </div>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-4">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-slate-600">
+        Статус: <span class="font-medium text-slate-900"><%= @analysis.status %></span>
+      </div>
+      <div class="text-xs text-slate-500"><%= l(@analysis.created_at, format: :short) %></div>
+    </div>
+
+    <% if @analysis.ready? %>
+      <% if @analysis.transcript.present? %>
+        <div>
+          <h2 class="text-sm font-semibold text-slate-800 mb-1">Транскрипт</h2>
+          <pre class="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3"><%= @analysis.transcript %></pre>
+        </div>
+      <% end %>
+
+      <% if @analysis.report_text.present? %>
+        <div>
+          <h2 class="text-sm font-semibold text-slate-800 mb-1">Отчёт</h2>
+        <pre class="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3"><%= @analysis.report_text %></pre>
+        </div>
+      <% end %>
+    <% elsif @analysis.failed? %>
+      <div class="text-rose-700">Произошла ошибка: <%= @analysis.error_message %></div>
+    <% else %>
+      <div class="text-sm text-slate-700 flex items-center gap-2">
+        <span class="inline-flex h-2 w-2 rounded-full bg-gray-400 animate-pulse"></span>
+        <span class="animate-pulse">Готовлюсь к анализу…</span>
+      </div>
+    <% end %>
+  </div>
+</div>

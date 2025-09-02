@@ -27,42 +27,23 @@
           <div class="flex items-center gap-2">
             <!-- Очистить ленту (UI) -->
             <button type="button"
-                    class="text-xs px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50"
-                    onclick="(function(){const a=document.getElementById('analysis_panels');const s=document.getElementById('analysis_stream_target');if(a)a.innerHTML='';if(s)s.innerHTML='';})()">
+                    class="text-xs p-3 px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50"
+                    onclick="(function(){
+                      const a=document.getElementById('analysis_panels');
+                      const s=document.getElementById('analysis_stream_target');
+                      if(a)a.innerHTML='';if(s)s.innerHTML='';}
+                    )()">
               Очистить ленту
             </button>
-
-            <!-- Очистить историю (БД) -->
-            <%= button_to "Очистить историю",
-                  clear_history_analyses_path,
-                  method: :delete,
-                  form: { data: { turbo_stream: true } },
-                  class: "text-xs px-2 py-1 rounded-md border border-rose-300 text-rose-700 hover:bg-rose-50" %>
           </div>
         </div>
-
-        <!-- панели текущего анализа -->
-        <div id="analysis_panels"></div>
 
         <!-- общий стрим прогресса -->
         <%= turbo_stream_from "analyses_stream_user_#{current_user.id}" %>
         <div id="analysis_stream_target" class="space-y-3"></div>
 
-        <!-- Недавние (опционально) -->
-        <% if @recent_analyses.present? %>
-          <div class="pt-2 border-t border-slate-100">
-            <h3 class="text-sm font-semibold text-slate-700 mb-2">Недавние</h3>
-            <ul class="space-y-2 text-sm">
-              <% @recent_analyses.each do |a| %>
-                <li>
-                  <%= link_to "Анализ ##{a.id} — #{a.status}", analysis_path(a),
-                              class: "text-slate-900 hover:underline" %>
-                  <div class="text-slate-500"><%= l(a.created_at, format: :short) %></div>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
+        <!-- панели текущего анализа -->
+        <div id="analysis_panels"></div>
       </div>
 
       <!-- Липкая форма -->
@@ -73,7 +54,8 @@
                         data: { turbo_stream: true },
                         html: { class: "flex items-center gap-3", enctype: "multipart/form-data" } do |f| %>
 
-            <%= f.file_field :audio, required: true, accept: "audio/*",
+            <%= f.file_field :file, required: true,
+                  accept: "audio/*,text/plain,.txt,.md",
                   class: "block w-full text-sm text-slate-600
                           file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0
                           file:text-sm file:font-semibold
@@ -81,7 +63,7 @@
                           hover:file:bg-slate-800" %>
 
             <span class="hidden md:block text-xs text-slate-500 whitespace-nowrap">
-              Поддерживаются mp3, m4a, wav и др.
+              Поддерживаются аудио (mp3/m4a/wav и др.) и текст (txt/md).
             </span>
 
             <%= f.submit "Запустить демо-анализ",

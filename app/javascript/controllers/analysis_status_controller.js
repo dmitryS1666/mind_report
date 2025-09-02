@@ -1,7 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-// data-controller="analysis-status"
-// data-analysis-status-url-value="/analyses/:id.json"
 export default class extends Controller {
   static targets = ["line"]
   static values = { url: String }
