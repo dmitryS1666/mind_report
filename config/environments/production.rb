@@ -27,16 +27,30 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST"), protocol: "https" }
 
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address:              ENV["SMTP_ADDRESS"],   # например "smtp.yandex.ru"
+  #   port:                 ENV["SMTP_PORT"],      # 465/587
+  #   domain:               ENV["SMTP_DOMAIN"],    # домен отправителя
+  #   user_name:            ENV["SMTP_USERNAME"],
+  #   password:             ENV["SMTP_PASSWORD"],
+  #   authentication:       :login,
+  #   enable_starttls_auto: true,
+  #   openssl_verify_mode:  "none" # при необходимости
+  # }
+
   config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  
   config.action_mailer.smtp_settings = {
-    address:              ENV["SMTP_ADDRESS"],   # например "smtp.yandex.ru"
-    port:                 ENV["SMTP_PORT"],      # 465/587
-    domain:               ENV["SMTP_DOMAIN"],    # домен отправителя
-    user_name:            ENV["SMTP_USERNAME"],
-    password:             ENV["SMTP_PASSWORD"],
-    authentication:       :login,
-    enable_starttls_auto: true,
-    openssl_verify_mode:  "none" # при необходимости
+    address: 'smtp.mail.ru',
+    port: 465,
+    domain: 'mail.ru',
+    user_name: 'test_project04@mail.ru',
+    password: 'KsGH8jKSjz5JPmsv5R1B',
+    authentication: 'plain',
+    ssl: true
   }
 
   # Compress CSS using a preprocessor.

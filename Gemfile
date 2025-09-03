@@ -10,6 +10,7 @@ gem "rails", "~> 7.0.8", ">= 7.0.8.7"
 gem "pg", "~> 1.5"           # постгрес (чуть свежее твоего 1.1)
 gem "puma", "~> 5.6"         # совместим с Ruby 3.2
 gem "bootsnap", require: false
+gem 'dotenv-rails'
 
 # Front (Hotwire + Tailwind + Importmap)
 gem "importmap-rails"
@@ -57,3 +58,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+gem 'capistrano', '~> 3.18'; gem 'capistrano-rails'; gem 'capistrano3-puma'; gem 'capistrano-bundler'
+
+gem "capistrano-passenger", "~> 0.2.1"
