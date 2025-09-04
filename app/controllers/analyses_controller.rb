@@ -63,7 +63,7 @@ class AnalysesController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.update("history_list", partial: "dashboard/history_list", locals: { analyses: [] }),
-          turbo_stream.append("toast-root", partial: "shared/toast_item",
+          turbo_stream.append("toast-root", partial: "shared/toasts",
                             locals: { kind: "success", message: "История очищена" })
         ]
       end
