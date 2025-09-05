@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_01_165251) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_05_105625) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,6 +59,28 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_01_165251) do
     t.index ["user_id"], name: "index_analyses_on_user_id"
   end
 
+  create_table "footer_links", force: :cascade do |t|
+    t.bigint "footer_section_id", null: false
+    t.string "label", null: false
+    t.string "url", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "published", default: true, null: false
+    t.boolean "target_blank", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["footer_section_id", "position"], name: "index_footer_links_on_footer_section_id_and_position"
+    t.index ["footer_section_id"], name: "index_footer_links_on_footer_section_id"
+  end
+
+  create_table "footer_sections", force: :cascade do |t|
+    t.string "title", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "published", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_footer_sections_on_position"
+  end
+
   create_table "plan_settings", force: :cascade do |t|
     t.integer "plan"
     t.integer "limit"
@@ -90,6 +112,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_01_165251) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "site_settings", force: :cascade do |t|
+    t.string "key", null: false
+    t.text "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_site_settings_on_key", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -116,5 +146,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_01_165251) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "analyses", "sessions"
   add_foreign_key "analyses", "users"
+  add_foreign_key "footer_links", "footer_sections"
   add_foreign_key "sessions", "users"
 end

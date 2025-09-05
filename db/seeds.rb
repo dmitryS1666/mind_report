@@ -45,3 +45,25 @@ User.find_or_create_by!(email: "admin@example.com") do |u|
   u.role = :admin
   u.plan = :pro
 end
+
+SiteSetting.find_or_create_by!(key: "footer_text") do |s|
+  s.value = "MindReport — инструмент для транскрибации и анализа аудио/текста. Этот текст можно изменить в админке."
+end
+
+main = FooterSection.find_or_create_by!(title: "Разделы") do |s|
+  s.position  = 0
+  s.published = true
+end
+FooterLink.find_or_create_by!(footer_section: main, label: "Главная", url: "/") do |l|
+  l.position = 0
+end
+FooterLink.find_or_create_by!(footer_section: main, label: "Отчёты", url: "/analyses") do |l|
+  l.position = 1
+end
+
+help = FooterSection.find_or_create_by!(title: "Поддержка") do |s|
+  s.position  = 1
+  s.published = true
+end
+FooterLink.find_or_create_by!(footer_section: help, label: "Помощь", url: "#") { |l| l.position = 0 }
+FooterLink.find_or_create_by!(footer_section: help, label: "Контакты", url: "mailto:support@example.com") { |l| l.position = 1 }
