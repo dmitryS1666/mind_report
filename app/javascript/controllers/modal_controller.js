@@ -26,7 +26,7 @@ export default class extends Controller {
     this.panelTarget.style.width = "50%"
     this.panelTarget.style.height = "500px"
     this.panelTarget.style.position = "absolute"
-    this.panelTarget.style.left = "25%"
+    this.panelTarget.style.left = "33%"
     this.panelTarget.style.margin = "0"
     this.panelTarget.style.top = "25%"
 
