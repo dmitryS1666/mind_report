@@ -6,7 +6,8 @@ Rails.application.routes.draw do
 
   resources :analyses, only: [:create, :show] do
     member do
-      get :download   # <— добавить
+      get :download_pdf
+      get :download
     end
     collection do
       post :demo

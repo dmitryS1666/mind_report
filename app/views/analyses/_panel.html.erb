@@ -6,20 +6,23 @@
 
   <% if analysis.ready? %>
     <div class="p-4 mt-4 space-y-4">
-      <div class="p-4 text-sm text-gray-500">Транскрипция (демо):</div>
-      <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap"><%= analysis.transcript %></pre>
+      <% if analysis.transcript.present? %>
+        <div class="p-4 text-sm text-gray-500">Транскрипция:</div>
+        <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap max-h-[40vh] overflow-auto"><%= analysis.transcript %></pre>
+      <% end %>
 
-      <div class="p-4 text-sm text-gray-500">Краткий отчёт:</div>
-      <div class="prose prose-sm max-w-none">
-        <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap"><%= analysis.report_text %></pre>
-      </div>
+      <% if analysis.report_text.present? %>
+        <div class="p-4 text-sm text-gray-500">Краткий отчёт:</div>
+        <div class="prose prose-sm max-w-none">
+          <pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm whitespace-pre-wrap max-h-[60vh] overflow-auto" data-controller="typewriter"><%= analysis.report_text %></pre>
+        </div>
+      <% end %>
     </div>
   <% elsif analysis.failed? %>
     <div class="mt-4 text-rose-700">
       Произошла ошибка: <%= analysis.error_message %>
     </div>
   <% else %>
-    <%# Пока не готово — показываем «мигающий» прелоадер сообщений %>
     <div class="p-4 mt-4 text-sm text-gray-700 flex items-center gap-2">
       <span class="inline-flex h-2 w-2 rounded-full bg-gray-400 animate-pulse"></span>
       <span class="animate-pulse">Готовлюсь к анализу…</span>

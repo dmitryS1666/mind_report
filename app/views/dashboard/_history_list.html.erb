@@ -10,13 +10,11 @@
           <%= link_to analysis_path(a),
                       class: "text-slate-900 hover:underline text-sm truncate block",
                       onclick: "window.dispatchEvent(new CustomEvent('close-history'))" do %>
-            Анализ #<%= a.id %> — <%= a.status %>
+            Анализ #<%= a.id %> — <%= render("analyses/status", analysis: a) %>
           <% end %>
           <div class="text-xs text-slate-500"><%= l(a.created_at, format: :short) %></div>
         </div>
-
-        <%= link_to "Открыть", 
-                    analysis_path(a),
+        <%= link_to "Открыть", analysis_path(a),
                     class: "p-3 shrink-0 text-xs px-2 py-1 rounded-md border border-slate-300 hover:bg-slate-50",
                     onclick: "window.dispatchEvent(new CustomEvent('close-history'))",
                     style: "margin-top: 10px;" %>

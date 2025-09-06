@@ -19,6 +19,7 @@ gem "stimulus-rails"
 gem "tailwindcss-rails"
 gem "rails-i18n", "~> 7.0"
 gem "bcrypt", "~> 3.1"
+gem 'prawn'
 
 # Auth
 gem "devise"

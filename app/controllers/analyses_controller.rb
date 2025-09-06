@@ -1,4 +1,3 @@
-# app/controllers/analyses_controller.rb
 class AnalysesController < ApplicationController
   before_action :authenticate_user!
 
@@ -10,7 +9,7 @@ class AnalysesController < ApplicationController
 
     @analysis = current_user.analyses.new(analysis_params)
     @analysis.report_kind = :short unless current_user.can_request_full_report?
-    @analysis.openai_model ||= 'gpt-5'
+    @analysis.openai_model ||= ENV.fetch('OPENAI_MODEL', 'gpt-5')
 
     if @analysis.save
       current_user.consume_quota!
@@ -63,8 +62,7 @@ class AnalysesController < ApplicationController
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.update("history_list", partial: "dashboard/history_list", locals: { analyses: [] }),
-          turbo_stream.append("toast-root", partial: "shared/toasts",
-                            locals: { kind: "success", message: "История очищена" })
+          turbo_stream.append("toast-root", partial: "shared/toasts", locals: { kind: "success", message: "История очищена" })
         ]
       end
       format.html { redirect_to dashboard_path, notice: "История очищена" }
@@ -83,6 +81,15 @@ class AnalysesController < ApplicationController
     send_data analysis.report_text.to_s,
               filename: "analysis-#{analysis.id}.txt",
               type: "text/plain",
+              disposition: "attachment"
+  end
+
+  def download_pdf
+    analysis = current_user.analyses.find(params[:id])
+    pdf = AnalysisReportPdf.new(analysis).render
+    send_data pdf,
+              filename: "analysis-#{analysis.id}.pdf",
+              type: "application/pdf",
               disposition: "attachment"
   end
 

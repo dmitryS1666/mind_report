@@ -1,35 +1,32 @@
-<!-- app/views/analyses/show.html.erb -->
 <div class="space-y-4">
   <div class="flex items-center justify-between">
     <h1 class="text-xl font-semibold text-slate-900">Анализ #<%= @analysis.id %></h1>
     <div class="flex items-center gap-2">
-      <%= link_to "← Назад", root_path,
-            class: "inline-flex items-center px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50" %>
-      <%= link_to "Скачать .txt", download_analysis_path(@analysis, format: :txt),
-            class: "inline-flex items-center px-3 py-2 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700" %>
+      <%= link_to "← Назад", root_path, class: "inline-flex items-center px-3 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50" %>
+      <%= link_to "Скачать .txt", download_analysis_path(@analysis), class: "inline-flex items-center px-3 py-2 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700" %>
+      <%= link_to "Скачать PDF", download_pdf_analysis_path(@analysis), class: "inline-flex items-center px-3 py-2 text-sm rounded-lg bg-emerald-600 text-white hover:bg-emerald-700" %>
     </div>
   </div>
 
   <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-4">
     <div class="flex items-center justify-between">
       <div class="text-sm text-slate-600">
-        Статус: <span class="font-medium text-slate-900"><%= @analysis.status %></span>
+        Статус: <%= render("analyses/status", analysis: @analysis) %>
       </div>
-      <div class="text-xs text-slate-500"><%= l(@analysis.created_at, format: :short) %></div>
+      <div class="text-xs text-slate-500"><%= @analysis.created_at.strftime("%d.%m.%Y %H:%M") %></div>
     </div>
 
     <% if @analysis.ready? %>
-      <% if @analysis.transcript.present? %>
-        <div>
-          <h2 class="text-sm font-semibold text-slate-800 mb-1">Транскрипт</h2>
-          <pre class="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3"><%= @analysis.transcript %></pre>
-        </div>
-      <% end %>
-
       <% if @analysis.report_text.present? %>
         <div>
           <h2 class="text-sm font-semibold text-slate-800 mb-1">Отчёт</h2>
-        <pre class="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3"><%= @analysis.report_text %></pre>
+          <pre class="text-sm whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-[70vh] overflow-auto" data-controller="typewriter"><%= @analysis.report_text %></pre>
+        </div>
+      <% end %>
+      <% if @analysis.transcript.present? %>
+        <div>
+          <h2 class="text-sm font-semibold text-slate-800 mb-1">Транскрипт</h2>
+          <pre class="text-xs whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-lg p-3 max-h-[50vh] overflow-auto"><%= @analysis.transcript %></pre>
         </div>
       <% end %>
     <% elsif @analysis.failed? %>

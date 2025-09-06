@@ -72,6 +72,7 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     base64 (0.3.0)
     bcrypt (3.1.20)
+    bigdecimal (3.2.3)
     bindex (0.8.1)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
@@ -211,6 +212,7 @@ GEM
       connection_pool
     orm_adapter (0.5.0)
     ostruct (0.6.3)
+    pdf-core (0.10.0)
     pg (1.6.1)
     pg (1.6.1-aarch64-linux)
     pg (1.6.1-aarch64-linux-musl)
@@ -220,6 +222,10 @@ GEM
     pg (1.6.1-x86_64-linux-musl)
     pp (0.6.2)
       prettyprint
+    prawn (2.5.0)
+      matrix (~> 0.4)
+      pdf-core (~> 0.10.0)
+      ttfunk (~> 1.8)
     prettyprint (0.2.0)
     psych (5.2.6)
       date
@@ -330,6 +336,8 @@ GEM
       trestle (~> 0.10.0)
     trestle-search (0.5.1)
       trestle (~> 0.10.1)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     turbo-rails (2.0.12)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
@@ -380,6 +388,7 @@ DEPENDENCIES
   letter_opener_web
   openai
   pg (~> 1.5)
+  prawn
   puma (~> 5.6)
   rails (~> 7.0.8, >= 7.0.8.7)
   rails-i18n (~> 7.0)

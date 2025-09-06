@@ -17,30 +17,28 @@ export default class extends Controller {
   }
 
   disconnect() {
-    clearInterval(this.rotate)
-    clearTimeout(this.pollTimer)
+    if (this.rotate) clearInterval(this.rotate)
+    if (this.pollTimer) clearTimeout(this.pollTimer)
   }
 
   tick() {
     if (!this.hasLineTarget) return
-    this.i = (this.i + 1) % this.phrases.length
-    this.lineTarget.textContent = this.phrases[this.i]
+    this.lineTarget.textContent = this.phrases[this.i % this.phrases.length]
+    this.i += 1
   }
 
   poll() {
-    fetch(this.urlValue, { headers: { "Accept": "application/json" }})
+    if (!this.urlValue) return
+    fetch(this.urlValue, { headers: { "Accept": "application/json" } })
       .then(r => r.json())
       .then(data => {
         if (data.done || data.failed) {
-          // перерисуем карточку целиком (перейдём на HTML-шаблон без прелоадера)
           window.location.reload()
           return
         }
-        // повторный опрос
         this.pollTimer = setTimeout(() => this.poll(), 2000)
       })
       .catch(() => {
-        // попробуем ещё раз через 3 сек
         this.pollTimer = setTimeout(() => this.poll(), 3000)
       })
   }
